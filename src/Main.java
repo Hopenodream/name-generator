@@ -19,19 +19,23 @@ public class Main{
     }
 
     public static void build_list(){
-        boolean containsRepeat = false;
-        while(!containsRepeat){
-            for (int i = 0; i < groupNumber; i++ ){
-                for (int j = 0; j < perGroup; j++ ){
+        System.out.println("at build list");
+        boolean repeat = true;
+        while(repeat){
+            for (int i = 0; i < groupNumber; i++ ) {
+                for (int r = 0; r < perGroup; r++ ) {
                     String newName = random_name();
                     if(Arrays.asList(collection).contains(newName)){
-                        containsRepeat = true;
+                        repeat = true;
                     }else{
-                        collection[i][j] = newName;
+                        collection[i][r] = newName;
+                        repeat = false;
                     }
                 }
             }
         }
+        System.out.println(repeat);
+        System.out.println(collection);
     }
 
     public static String random_name(){
