@@ -15,18 +15,47 @@ public class Main{
         declare_arrays();
 
         build_list();
-        System.out.println(collection.toString());
+        iterate_through_groups();
+    }
+
+    public static void iterate_through_groups(){
+        for (int i = 0; i < groupNumber; i++) {
+            System.out.println("============");
+            System.out.println("Group " + (i + 1));
+            for (int j = 0; j < collection[i].length; j++){
+                System.out.println(collection[i][j]);
+            }
+        }
+    }
+
+    public static boolean array_contains_duplicate(String val){
+        for (int i = 0; i < groupNumber; i++) {
+            for (int j = 0; j < collection[i].length; j++){
+                if (collection[i][j] != null) {
+                    if (collection[i][j].equalsIgnoreCase(val)) {
+                       // System.out.println("true");
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static void build_list(){
-        System.out.println("at build list");
         boolean repeat = true;
         while(repeat){
             for (int i = 0; i < groupNumber; i++ ) {
                 for (int r = 0; r < perGroup; r++ ) {
                     String newName = random_name();
-                    if(Arrays.asList(collection).contains(newName)){
-                        repeat = true;
+                    if(array_contains_duplicate(newName)){
+                        if(r == 0 && i != 0){
+                            r = perGroup - 1;
+                            i--;
+                        }else{
+                            r--;
+                        }
+
                     }else{
                         collection[i][r] = newName;
                         repeat = false;
@@ -34,8 +63,6 @@ public class Main{
                 }
             }
         }
-        System.out.println(repeat);
-        System.out.println(collection);
     }
 
     public static String random_name(){
@@ -77,12 +104,12 @@ public class Main{
     }
 
     public static void declare_arrays(){
-        if((groupNumber % namesNumber) == 0){
-            perGroup = groupNumber / namesNumber;
+        if((namesNumber % groupNumber) == 0){
+            perGroup = namesNumber / groupNumber;
         }
         else{
-            remainder = groupNumber % namesNumber;
-            perGroup = groupNumber / (namesNumber - remainder);
+            remainder = namesNumber % groupNumber;
+            perGroup = (namesNumber - remainder) / groupNumber;
         }
 
         collection = new String[groupNumber][perGroup];
