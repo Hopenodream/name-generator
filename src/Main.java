@@ -7,23 +7,36 @@ public class Main{
     static int namesNumber;
     static int perGroup;
     static int remainder;
+    static String namesRaw;
+    static String[] namesArray;
     static String collection[][];
 
     public static void main(String[] args){
         get_group_number();
-        get_names_number();
-        declare_arrays();
+        get_names();
+        if (groupNumber == 0){
+            System.out.println(random_name());
+        } else {
+            declare_arrays();
 
-        build_list();
-        iterate_through_groups();
+            build_list();
+            if (remainder > 0) {
+                distribute_remainder();
+            }
+            iterate_through_groups();
+        }
     }
 
     public static void iterate_through_groups(){
         for (int i = 0; i < groupNumber; i++) {
             System.out.println("============");
             System.out.println("Group " + (i + 1));
-            for (int j = 0; j < collection[i].length; j++){
-                System.out.println(collection[i][j]);
+            for (int j = 0; j < collection[i].length; j++) {
+                if(collection[i][j] == null){
+
+                }else {
+                    System.out.println(collection[i][j]);
+                }
             }
         }
     }
@@ -33,7 +46,6 @@ public class Main{
             for (int j = 0; j < collection[i].length; j++){
                 if (collection[i][j] != null) {
                     if (collection[i][j].equalsIgnoreCase(val)) {
-                       // System.out.println("true");
                         return true;
                     }
                 }
@@ -42,22 +54,35 @@ public class Main{
         return false;
     }
 
-    public static void build_list(){
-        boolean repeat = true;
-        while(repeat){
-            for (int i = 0; i < groupNumber; i++ ) {
-                for (int r = 0; r < perGroup; r++ ) {
-                    String newName = random_name();
-                    if(array_contains_duplicate(newName)){
-                        if(r == 0 && i != 0){
-                            r = perGroup - 1;
-                            i--;
-                        }else{
-                            r--;
-                        }
+    public static void distribute_remainder(){
+        for (int i = 0; i < remainder; i++) {
+            String newName = random_name();
+            if (array_contains_duplicate(newName)) {
+                i--;
+            } else {
+                collection[i][perGroup] = newName;
+            }
+        }
+    }
 
-                    }else{
-                        collection[i][r] = newName;
+    public static void build_list(){
+        if (remainder > 0) {
+            perGroup --;
+        }
+        boolean repeat = true;
+        while (repeat) {
+            for (int i = 0; i < groupNumber; i++) {
+                for (int b = 0; b < perGroup; b++) {
+                    String newName = random_name();
+                    if (array_contains_duplicate(newName)) {
+                        if (b == 0 && i != 0) {
+                            b = perGroup - 1;
+                            i--;
+                        } else {
+                            b--;
+                        }
+                    } else {
+                        collection[i][b] = newName;
                         repeat = false;
                     }
                 }
@@ -69,37 +94,7 @@ public class Main{
         String name;
         Random rand = new Random();
         int namesIndex = rand.nextInt(namesNumber) + 1;
-        switch(namesIndex){
-            case 1: name = "Ken"; break;
-            case 2: name = "Ellie"; break;
-            case 3: name = "Jordan"; break;
-            case 4: name = "Max"; break;
-            case 5: name = "Jake P"; break;
-            case 6: name = "Jacob C"; break;
-            case 7: name = "Layla"; break;
-            case 8: name = "Liesl"; break;
-            case 9: name = "Alexah"; break;
-            case 10: name = "Vanessa"; break;
-            case 11: name = "Faith"; break;
-            case 12: name = "Savannah"; break;
-            case 13: name = "Zahara"; break;
-            case 14: name = "Jocelyn"; break;
-            case 15: name = "Josh"; break;
-            case 16: name = "Avery"; break;
-            case 17: name = "Ehryn"; break;
-            case 18: name = "Sarah"; break;
-            case 19: name = "Carlee"; break;
-            case 20: name = "Gaven"; break;
-            case 21: name = "Griffin"; break;
-            case 22: name = "Megan"; break;
-            case 23: name = "Morgan"; break;
-            case 24: name = "Micah"; break;
-            case 25: name = "Katie"; break;
-            case 26: name = "Rebekah"; break;
-            case 27: name = "Ella"; break;
-            case 28: name = "Lorelei"; break;
-            default: name = " "; break;
-        }
+        name = namesArray[namesIndex - 1];
         return name;
     }
 
@@ -107,21 +102,29 @@ public class Main{
         if((namesNumber % groupNumber) == 0){
             perGroup = namesNumber / groupNumber;
         }
+        else if(namesNumber < groupNumber){
+            System.out.println("Less names than there are groups");
+        }
         else{
             remainder = namesNumber % groupNumber;
             perGroup = (namesNumber - remainder) / groupNumber;
         }
 
+        if (remainder > 0) {
+            perGroup++;
+        }
         collection = new String[groupNumber][perGroup];
     }
 
-    public static void get_names_number(){
+    public static void get_names(){
         boolean pass = false;
         while(!pass){
             try{
                 Scanner input = new Scanner(System.in);
-                System.out.println("Enter number of people >>>");
-                namesNumber = input.nextInt();
+                System.out.println("Enter names, separated by commas >>>");
+                namesRaw = input.nextLine();
+                namesArray = namesRaw.split("\\s*,\\s*");
+                namesNumber = namesArray.length;
                 pass = true;
             } catch(Exception e){
                 System.out.println("Error, try again");
@@ -135,9 +138,12 @@ public class Main{
         while(!pass){
             try{
                 Scanner input = new Scanner(System.in);
-                System.out.println("Enter number of groups >>>");
+                System.out.println("Enter number of groups (zero for one random name) >>>");
                 groupNumber = input.nextInt();
                 pass = true;
+                if (groupNumber < 0){
+                    pass = false;
+                }
             } catch(Exception e){
                 System.out.println("Error, try again");
                 pass = false;
